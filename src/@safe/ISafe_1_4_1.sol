@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 pragma solidity >=0.7.0 <0.9.0;
+import "./base/FallbackManager.sol";
+import "./base/GuardManager.sol";
+import "./base/ModuleManager.sol";
+import "./base/OwnerManager.sol";
 import "./common/Enum.sol";
 
 /**
@@ -19,7 +23,7 @@ import "./common/Enum.sol";
  * @author Stefan George - @Georgi87
  * @author Richard Meissner - @rmeissner
  */
-interface ISafe_1_4_1
+interface ISafe_1_4_1 is FallbackManager, GuardManager, ModuleManager, OwnerManager
 {
     event SafeSetup(address indexed initiator, address[] owners, uint256 threshold, address initializer, address fallbackHandler);
     event ApproveHash(bytes32 indexed approvedHash, address indexed owner);
