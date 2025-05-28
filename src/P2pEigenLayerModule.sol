@@ -21,6 +21,8 @@ interface ISafe {
 }
 
 contract P2pEigenLayerModule {
+    event P2pEigenLayerModule__Setup(address eigenPod, address eigenPodOwner);
+
     IEigenPodManager public constant EigenPodManager = IEigenPodManager(0x91E677b07F7AF907ec9a428aafA9fc14a0d3A338);
 
     /// @dev maps each Safe to its configured EigenPod
@@ -28,15 +30,31 @@ contract P2pEigenLayerModule {
 
     function setup(bytes calldata) external {
         IEigenPod eigenPod = EigenPodManager.getPod(msg.sender);
-        require(address(eigenPod).code.length > 0, "Invalid EigenPod address");
+        ISafe safe = ISafe(msg.sender);
+
+        if (address(eigenPod).code.length == 0) {
+            bytes memory data = abi.encodeCall(EigenPodManager.createPod, ());
+            require(safe.execTransactionFromModule(address(EigenPodManager), 0, data, Enum.Operation.Call), "Could not createPod");
+        }
+
         eigenPodOf[ISafe(msg.sender)] = eigenPod;
+        emit P2pEigenLayerModule__Setup(address(eigenPod), msg.sender);
     }
 
-    function getEigenPodVersion(ISafe safe) private {
+    function getEigenPodVersion(address safeAddress) external {
+        ISafe safe = ISafe(safeAddress);
         bytes memory data = abi.encodeCall(ISemVerMixin.version, ());
         address eigenPod = address(eigenPodOf[safe]);
 
         require(safe.execTransactionFromModule(eigenPod, 0, data, Enum.Operation.Call), "Could not getEigenPodVersion");
+    }
+
+    function startCheckpoint(address safeAddress) external {
+        ISafe safe = ISafe(safeAddress);
+        bytes memory data = abi.encodeCall(IEigenPod.startCheckpoint, (false));
+        address eigenPod = address(eigenPodOf[safe]);
+
+        require(safe.execTransactionFromModule(eigenPod, 0, data, Enum.Operation.Call), "Could not startCheckpoint");
     }
 }
 

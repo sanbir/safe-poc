@@ -24,7 +24,7 @@ contract SafeTest is Test {
     address public Module;
 
     function setUp() public {
-        vm.createSelectFork("mainnet", 21308893);
+        vm.createSelectFork("mainnet", 22572464);
 
         (clientAddress, clientPrivateKey) = makeAddrAndKey("client");
         (p2pOperatorAddress, p2pOperatorPrivateKey) = makeAddrAndKey("p2pOperator");
@@ -39,7 +39,16 @@ contract SafeTest is Test {
     function test_Module() public {
         ClientSafeInstance = _deploySafe();
         Module = _deployP2pEigenLayerModule();
+        _enableModule();
+        _setupModule();
 
+        vm.startPrank(p2pOperatorAddress);
+        P2pEigenLayerModule(Module).getEigenPodVersion(ClientSafeInstance);
+        P2pEigenLayerModule(Module).startCheckpoint(ClientSafeInstance);
+        vm.stopPrank();
+    }
+
+    function _enableModule() private {
         address to = ClientSafeInstance;
         uint256 value = 0;
         bytes memory data = abi.encodeCall(ModuleManager.enableModule, (Module));
@@ -48,11 +57,26 @@ contract SafeTest is Test {
 
         vm.startPrank(clientAddress);
         ISafe_1_4_1(ClientSafeInstance).execTransaction(
-        to, value, data, operation,
+            to, value, data, operation,
             0, 0, 0, address(0),
             payable(address(0)), signatures
         );
+        vm.stopPrank();
+    }
 
+    function _setupModule() private {
+        address to = Module;
+        uint256 value = 0;
+        bytes memory data = abi.encodeCall(P2pEigenLayerModule.setup, (""));
+        Enum.Operation operation = Enum.Operation.Call;
+        bytes memory signatures = abi.encodePacked(bytes32(uint256(uint160(clientAddress))), bytes32(0), uint8(1));
+
+        vm.startPrank(clientAddress);
+        ISafe_1_4_1(ClientSafeInstance).execTransaction(
+            to, value, data, operation,
+            0, 0, 0, address(0),
+            payable(address(0)), signatures
+        );
         vm.stopPrank();
     }
 
