@@ -3,6 +3,7 @@
 
 pragma solidity 0.8.27;
 
+import "./@eigenlayer/interfaces/IEigenPod.sol";
 import "./@safe/common/Enum.sol";
 
 interface ISafe {
@@ -20,5 +21,22 @@ interface ISafe {
 }
 
 contract P2pEigenLayerModule {
+    IEigenPodManager public constant EigenPodManager = IEigenPodManager(0x91E677b07F7AF907ec9a428aafA9fc14a0d3A338);
 
+    /// @dev maps each Safe to its configured EigenPod
+    mapping(ISafe => IEigenPod) private eigenPodOf;
+
+    function setup(bytes calldata) external {
+        IEigenPod eigenPod = EigenPodManager.getPod(msg.sender);
+        require(address(eigenPod).code.length > 0, "Invalid EigenPod address");
+        eigenPodOf[ISafe(msg.sender)] = eigenPod;
+    }
+
+    function getEigenPodVersion(ISafe safe) private {
+        bytes memory data = abi.encodeCall(ISemVerMixin.version, ());
+        address eigenPod = address(eigenPodOf[safe]);
+
+        require(safe.execTransactionFromModule(eigenPod, 0, data, Enum.Operation.Call), "Could not getEigenPodVersion");
+    }
 }
+

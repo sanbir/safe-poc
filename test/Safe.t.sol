@@ -5,6 +5,7 @@ pragma solidity 0.8.27;
 
 import "../src/@safe/ISafe_1_4_1.sol";
 import "../src/@safe/proxies/SafeProxyFactory.sol";
+import "../src/P2pEigenLayerModule.sol";
 import {Test, console} from "forge-std/Test.sol";
 
 contract SafeTest is Test {
@@ -20,6 +21,7 @@ contract SafeTest is Test {
     uint256 private p2pOperatorPrivateKey;
 
     address public ClientSafeInstance;
+    address public Module;
 
     function setUp() public {
         vm.createSelectFork("mainnet", 21308893);
@@ -34,10 +36,37 @@ contract SafeTest is Test {
         console.log(ClientSafeInstance);
     }
 
+    function test_Module() public {
+        ClientSafeInstance = _deploySafe();
+        Module = _deployP2pEigenLayerModule();
+
+        address to = ClientSafeInstance;
+        uint256 value = 0;
+        bytes memory data = abi.encodeCall(ModuleManager.enableModule, (Module));
+        Enum.Operation operation = Enum.Operation.Call;
+        bytes memory signatures = abi.encodePacked(bytes32(uint256(uint160(clientAddress))), bytes32(0), uint8(1));
+
+        vm.startPrank(clientAddress);
+        ISafe_1_4_1(ClientSafeInstance).execTransaction(
+        to, value, data, operation,
+            0, 0, 0, address(0),
+            payable(address(0)), signatures
+        );
+
+        vm.stopPrank();
+    }
+
+    function _deployP2pEigenLayerModule() private returns(address) {
+        vm.startPrank(p2pOperatorAddress);
+        P2pEigenLayerModule module = new P2pEigenLayerModule();
+        vm.stopPrank();
+
+        return address(module);
+    }
+
     function _deploySafe() private returns(address) {
-        address[] memory _owners = new address[](2);
+        address[] memory _owners = new address[](1);
         _owners[0] = clientAddress;
-        _owners[1] = p2pOperatorAddress;
 
         uint256 _threshold = 1;
         address to = address(0);
