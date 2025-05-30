@@ -36,11 +36,11 @@ contract SafeTest is Test {
         console.log(ClientSafeInstance);
     }
 
-    function test_Module() public {
+    function test_SafeModule() public {
         ClientSafeInstance = _deploySafe();
         Module = _deployP2pEigenLayerModule();
-        _enableModule();
-        _setupModule();
+        _enableSafeModule();
+        _setupSafeModule();
 
         vm.startPrank(p2pOperatorAddress);
         P2pEigenLayerModule(Module).getEigenPodVersion(ClientSafeInstance);
@@ -48,7 +48,7 @@ contract SafeTest is Test {
         vm.stopPrank();
     }
 
-    function _enableModule() private {
+    function _enableSafeModule() private {
         address to = ClientSafeInstance;
         uint256 value = 0;
         bytes memory data = abi.encodeCall(ModuleManager.enableModule, (Module));
@@ -64,7 +64,7 @@ contract SafeTest is Test {
         vm.stopPrank();
     }
 
-    function _setupModule() private {
+    function _setupSafeModule() private {
         address to = Module;
         uint256 value = 0;
         bytes memory data = abi.encodeCall(P2pEigenLayerModule.setup, (""));
