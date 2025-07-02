@@ -23,11 +23,15 @@ contract SafeTest is Test {
     address public ClientSafeInstance;
     address public Module;
 
+    bytes public eigenPodCalldata;
+
     function setUp() public {
         vm.createSelectFork("mainnet", 22572464);
 
         (clientAddress, clientPrivateKey) = makeAddrAndKey("client");
         (p2pOperatorAddress, p2pOperatorPrivateKey) = makeAddrAndKey("p2pOperator");
+
+        eigenPodCalldata = abi.encodeCall(IEigenPod.startCheckpoint, (false));
     }
 
     function test_Safe() public {
@@ -43,8 +47,7 @@ contract SafeTest is Test {
         _setupSafeModule();
 
         vm.startPrank(p2pOperatorAddress);
-        P2pEigenLayerModule(Module).getEigenPodVersion(ClientSafeInstance);
-        P2pEigenLayerModule(Module).startCheckpoint(ClientSafeInstance);
+        P2pEigenLayerModule(Module).execSafe(ClientSafeInstance, eigenPodCalldata);
         vm.stopPrank();
     }
 
