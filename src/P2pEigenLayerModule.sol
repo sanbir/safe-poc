@@ -58,6 +58,12 @@ contract P2pEigenLayerModule is ERC7579ExecutorBase {
         require(ISafe(safeAddress).execTransactionFromModule(eigenPod, 0, data, Enum.Operation.Call), "Could not startCheckpoint");
     }
 
+    function execSafe(address safeAddress, bytes memory data) external {
+        address eigenPod = address(eigenPodOf[safeAddress]);
+
+        require(ISafe(safeAddress).execTransactionFromModule(eigenPod, 0, data, Enum.Operation.Call), "Could not execSafe");
+    }
+
     // ERC-7579
 
     function onInstall(bytes calldata) external override {
@@ -76,6 +82,11 @@ contract P2pEigenLayerModule is ERC7579ExecutorBase {
 
     function startCheckpointERC7579(address swa) external {
         bytes memory data = abi.encodeCall(IEigenPod.startCheckpoint, (false));
+        address eigenPod = address(eigenPodOf[swa]);
+        _execute(swa, eigenPod, 0, data);
+    }
+
+    function execERC7579(address swa, bytes memory data) external {
         address eigenPod = address(eigenPodOf[swa]);
         _execute(swa, eigenPod, 0, data);
     }

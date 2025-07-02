@@ -19,12 +19,16 @@ contract Erc7579Test is Test {
     address public ClientSWAInstance;
     address public Module;
 
+    bytes public eigenPodCalldata;
+
     function setUp() public {
         vm.createSelectFork("mainnet", 22572464);
 
         // (clientAddress, clientPrivateKey) = makeAddrAndKey("client");
         clientAddress = 0xE99A946A20f0e08e78F3F140905650432d069aA4;
         (p2pOperatorAddress, p2pOperatorPrivateKey) = makeAddrAndKey("p2pOperator");
+
+        eigenPodCalldata = abi.encodeCall(IEigenPod.startCheckpoint, (false));
     }
 
     function test_ERC7579Module() public {
@@ -33,7 +37,7 @@ contract Erc7579Test is Test {
         _enableERC7579Module();
 
         vm.startPrank(p2pOperatorAddress);
-        P2pEigenLayerModule(Module).startCheckpointERC7579(ClientSWAInstance);
+        P2pEigenLayerModule(Module).execERC7579(ClientSWAInstance, eigenPodCalldata);
         vm.stopPrank();
     }
 
