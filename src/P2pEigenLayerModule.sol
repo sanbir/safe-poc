@@ -24,30 +24,36 @@ interface ISafe {
 contract P2pEigenLayerModule is ERC7579ExecutorBase {
     event P2pEigenLayerModule__Setup(address eigenPod, address eigenPodOwner);
 
-    IEigenPodManager public constant EigenPodManager = IEigenPodManager(0x91E677b07F7AF907ec9a428aafA9fc14a0d3A338);
+    IEigenPodManager public immutable i_EigenPodManager;
 
     /// @dev maps each SWA to its configured EigenPod
-    mapping(address => IEigenPod) public eigenPodOf;
+    mapping(address => IEigenPod) public s_EigenPodOf;
+
+    constructor() {
+        i_EigenPodManager = block.chainid == 1
+            ? IEigenPodManager(0x91E677b07F7AF907ec9a428aafA9fc14a0d3A338)
+            : IEigenPodManager(0xcd1442415Fc5C29Aa848A49d2e232720BE07976c);
+    }
 
     // Safe
 
     function setup(bytes calldata) external {
-        IEigenPod eigenPod = EigenPodManager.getPod(msg.sender);
+        IEigenPod eigenPod = i_EigenPodManager.getPod(msg.sender);
         ISafe safe = ISafe(msg.sender);
 
         if (address(eigenPod).code.length == 0) {
-            bytes memory data = abi.encodeCall(EigenPodManager.createPod, ());
-            require(safe.execTransactionFromModule(address(EigenPodManager), 0, data, Enum.Operation.Call), "Could not createPod");
+            bytes memory data = abi.encodeCall(i_EigenPodManager.createPod, ());
+            require(safe.execTransactionFromModule(address(i_EigenPodManager), 0, data, Enum.Operation.Call), "Could not createPod");
         }
 
-        eigenPodOf[msg.sender] = eigenPod;
+        s_EigenPodOf[msg.sender] = eigenPod;
         emit P2pEigenLayerModule__Setup(address(eigenPod), msg.sender);
     }
 
     function execSafe(address safeAddress, address eigenLayerContract, bytes memory data) external {
         bool isAllowed = _isAllowedEigenLayerContract(eigenLayerContract);
         if (!isAllowed) {
-            address eigenPod = address(eigenPodOf[safeAddress]);
+            address eigenPod = address(s_EigenPodOf[safeAddress]);
             require(eigenLayerContract == eigenPod, "Contract not allowed");
         }
         require(ISafe(safeAddress).execTransactionFromModule(
@@ -61,14 +67,14 @@ contract P2pEigenLayerModule is ERC7579ExecutorBase {
     // ERC-7579
 
     function onInstall(bytes calldata) external override {
-        IEigenPod eigenPod = EigenPodManager.getPod(msg.sender);
+        IEigenPod eigenPod = i_EigenPodManager.getPod(msg.sender);
 
         if (address(eigenPod).code.length == 0) {
-            bytes memory data = abi.encodeCall(EigenPodManager.createPod, ());
-            _execute(address(EigenPodManager), 0, data);
+            bytes memory data = abi.encodeCall(i_EigenPodManager.createPod, ());
+            _execute(address(i_EigenPodManager), 0, data);
         }
 
-        eigenPodOf[msg.sender] = eigenPod;
+        s_EigenPodOf[msg.sender] = eigenPod;
         emit P2pEigenLayerModule__Setup(address(eigenPod), msg.sender);
     }
 
@@ -77,7 +83,7 @@ contract P2pEigenLayerModule is ERC7579ExecutorBase {
     function execERC7579(address swa, address eigenLayerContract, bytes memory data) external {
         bool isAllowed = _isAllowedEigenLayerContract(eigenLayerContract);
         if (!isAllowed) {
-            address eigenPod = address(eigenPodOf[swa]);
+            address eigenPod = address(s_EigenPodOf[swa]);
             require(eigenLayerContract == eigenPod, "Contract not allowed");
         }
         _execute(swa, eigenLayerContract, 0, data);
@@ -94,7 +100,7 @@ contract P2pEigenLayerModule is ERC7579ExecutorBase {
     view
     returns (bool)
     {
-        return address(eigenPodOf[smartAccount]) != address(0);
+        return address(s_EigenPodOf[smartAccount]) != address(0);
     }
 
     function _isAllowedEigenLayerContract(address _contract) private view returns(bool) {

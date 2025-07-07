@@ -46,7 +46,7 @@ contract SafeTest is Test {
         _enableSafeModule();
         _setupSafeModule();
 
-        address pod = address(P2pEigenLayerModule(Module).eigenPodOf(ClientSafeInstance));
+        address pod = address(P2pEigenLayerModule(Module).s_EigenPodOf(ClientSafeInstance));
         vm.startPrank(p2pOperatorAddress);
         P2pEigenLayerModule(Module).execSafe(ClientSafeInstance, pod, eigenPodCalldata);
         vm.stopPrank();

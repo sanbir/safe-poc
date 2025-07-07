@@ -36,7 +36,7 @@ contract Erc7579Test is Test {
         Module = _deployP2pEigenLayerModule();
         _enableERC7579Module();
 
-        address pod = address(P2pEigenLayerModule(Module).eigenPodOf(ClientSWAInstance));
+        address pod = address(P2pEigenLayerModule(Module).s_EigenPodOf(ClientSWAInstance));
         vm.startPrank(p2pOperatorAddress);
         P2pEigenLayerModule(Module).execERC7579(ClientSWAInstance, pod, eigenPodCalldata);
         vm.stopPrank();
