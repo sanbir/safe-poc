@@ -34,12 +34,6 @@ contract SafeTest is Test {
         eigenPodCalldata = abi.encodeCall(IEigenPod.startCheckpoint, (false));
     }
 
-    function test_Safe() public {
-        ClientSafeInstance = _deploySafe();
-
-        console.log(ClientSafeInstance);
-    }
-
     function test_SafeModule() public {
         ClientSafeInstance = _deploySafe();
         Module = _deployP2pEigenLayerModule();
