@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 P2P Validator <info@p2p.org>
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.27;
+pragma solidity 0.8.30;
 
 import "../src/@safe/ISafe_1_4_1.sol";
 import "../src/@safe/proxies/SafeProxyFactory.sol";
@@ -34,20 +34,15 @@ contract SafeTest is Test {
         eigenPodCalldata = abi.encodeCall(IEigenPod.startCheckpoint, (false));
     }
 
-    function test_Safe() public {
-        ClientSafeInstance = _deploySafe();
-
-        console.log(ClientSafeInstance);
-    }
-
     function test_SafeModule() public {
         ClientSafeInstance = _deploySafe();
         Module = _deployP2pEigenLayerModule();
         _enableSafeModule();
         _setupSafeModule();
 
+        address pod = address(P2pEigenLayerModule(Module).s_EigenPodOf(ClientSafeInstance));
         vm.startPrank(p2pOperatorAddress);
-        P2pEigenLayerModule(Module).execSafe(ClientSafeInstance, eigenPodCalldata);
+        P2pEigenLayerModule(Module).execSafe(ClientSafeInstance, pod, eigenPodCalldata);
         vm.stopPrank();
     }
 
