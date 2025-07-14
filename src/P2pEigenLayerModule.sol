@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 2025 P2P Validator <info@p2p.org>
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.27;
+pragma solidity 0.8.30;
 
 import "../lib/modulekit/src/module-bases/ERC7579ExecutorBase.sol";
 import "./@eigenlayer/interfaces/IEigenPod.sol";
 import "./@safe/common/Enum.sol";
+import "./IDepositContract.sol";
 
 interface ISafe {
     /// @dev Allows a Module to execute a Safe transaction without any further confirmations.
@@ -29,6 +30,8 @@ contract P2pEigenLayerModule is ERC7579ExecutorBase {
     /// @dev maps each SWA to its configured EigenPod
     mapping(address => IEigenPod) public s_EigenPodOf;
 
+    IDepositContract constant public BeaconDepositContract = IDepositContract(0x00000000219ab540356cBB839Cbe05303d7705Fa);
+
     constructor() {
         i_EigenPodManager = block.chainid == 1
             ? IEigenPodManager(0x91E677b07F7AF907ec9a428aafA9fc14a0d3A338)
@@ -50,7 +53,7 @@ contract P2pEigenLayerModule is ERC7579ExecutorBase {
         emit P2pEigenLayerModule__Setup(address(eigenPod), msg.sender);
     }
 
-    function execSafe(address safeAddress, address eigenLayerContract, bytes memory data) external {
+    function execSafe(address safeAddress, address eigenLayerContract, bytes calldata data) external {
         bool isAllowed = _isAllowedEigenLayerContract(eigenLayerContract);
         if (!isAllowed) {
             address eigenPod = address(s_EigenPodOf[safeAddress]);
@@ -62,6 +65,38 @@ contract P2pEigenLayerModule is ERC7579ExecutorBase {
             data,
             Enum.Operation.Call
         ), "Could not execSafe");
+    }
+
+    function depositEthSafe(
+        address _safeAddress,
+        uint256 _ethAmountPerValidatorInWei,
+        bytes1 _withdrawalCredentialsType,
+        bytes[] calldata _pubkeys,
+        bytes[] calldata _signatures,
+        bytes32[] calldata _depositDataRoots
+    ) external {
+        uint256 validatorCount = _pubkeys.length;
+        bytes memory withdrawalCredentials = abi.encodePacked(
+            _withdrawalCredentialsType,
+            bytes11(0),
+            _safeAddress
+        );
+
+        for (uint256 i = 0; i < validatorCount; ++i) {
+            bytes memory data = abi.encodeCall(BeaconDepositContract.deposit, (
+                _pubkeys[i],
+                withdrawalCredentials,
+                _signatures[i],
+                _depositDataRoots[i]
+            ));
+
+            require(ISafe(_safeAddress).execTransactionFromModule(
+                address(BeaconDepositContract),
+                _ethAmountPerValidatorInWei,
+                data,
+                Enum.Operation.Call
+            ), "Could not execSafe");
+        }
     }
 
     // ERC-7579
@@ -80,13 +115,40 @@ contract P2pEigenLayerModule is ERC7579ExecutorBase {
 
     function onUninstall(bytes calldata) external override { }
 
-    function execERC7579(address swa, address eigenLayerContract, bytes memory data) external {
+    function execERC7579(address swa, address eigenLayerContract, bytes calldata data) external {
         bool isAllowed = _isAllowedEigenLayerContract(eigenLayerContract);
         if (!isAllowed) {
             address eigenPod = address(s_EigenPodOf[swa]);
             require(eigenLayerContract == eigenPod, "Contract not allowed");
         }
         _execute(swa, eigenLayerContract, 0, data);
+    }
+
+    function depositEthERC7579(
+        address _swa,
+        uint256 _ethAmountPerValidatorInWei,
+        bytes1 _withdrawalCredentialsType,
+        bytes[] calldata _pubkeys,
+        bytes[] calldata _signatures,
+        bytes32[] calldata _depositDataRoots
+    ) external {
+        uint256 validatorCount = _pubkeys.length;
+        bytes memory withdrawalCredentials = abi.encodePacked(
+            _withdrawalCredentialsType,
+            bytes11(0),
+            _swa
+        );
+
+        for (uint256 i = 0; i < validatorCount; ++i) {
+            bytes memory data = abi.encodeCall(BeaconDepositContract.deposit, (
+                _pubkeys[i],
+                withdrawalCredentials,
+                _signatures[i],
+                _depositDataRoots[i]
+            ));
+
+            _execute(_swa, address(BeaconDepositContract), _ethAmountPerValidatorInWei, data);
+        }
     }
 
     function isModuleType(uint256 typeID) external pure override returns (bool) {
