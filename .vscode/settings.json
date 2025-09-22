@@ -1,0 +1,30 @@
+{
+    "wake.compiler.solc.remappings": [
+        "@gnosis.pm/safe-contracts/=lib/safe-contracts/contracts/",
+        "@zodiac/=lib/zodiac/contracts/",
+        "@roles/=lib/zodiac-modifier-roles/packages/evm/contracts/",
+        "@openzeppelin/=lib/openzeppelin-contracts/",
+        "@safe-global/safe-contracts/=lib/safe-contracts/contracts/",
+        "@gnosis.pm/zodiac/=lib/zodiac/contracts/",
+        "@ERC4337/=lib/modulekit/node_modules/@ERC4337/",
+        "@prb/math/=lib/modulekit/node_modules/@prb/math/src/",
+        "@rhinestone/=lib/modulekit/node_modules/@rhinestone/",
+        "ExcessivelySafeCall/=lib/modulekit/node_modules/excessively-safe-call/src/",
+        "account-abstraction-v0.6/=lib/modulekit/node_modules/@ERC4337/account-abstraction-v0.6/contracts/",
+        "account-abstraction/=lib/modulekit/node_modules/@ERC4337/account-abstraction/contracts/",
+        "ds-test/=lib/modulekit/node_modules/ds-test/src/",
+        "erc4337-validation/=lib/modulekit/node_modules/@rhinestone/erc4337-validation/src/",
+        "erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+        "excessively-safe-call/=lib/modulekit/node_modules/excessively-safe-call/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat-deploy/=lib/modulekit/node_modules/hardhat-deploy/",
+        "hardhat/=lib/modulekit/node_modules/hardhat/",
+        "modulekit/=lib/modulekit/src/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "safe-contracts/=lib/safe-contracts/contracts/",
+        "solady/=lib/modulekit/node_modules/solady/src/",
+        "solarray/=lib/modulekit/node_modules/solarray/src/",
+        "zodiac-modifier-roles/=lib/zodiac-modifier-roles/",
+        "zodiac/=lib/zodiac/contracts/"
+    ]
+}

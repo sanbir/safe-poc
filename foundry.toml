@@ -9,4 +9,20 @@ via_ir = true
 optimizer = true
 optimizer-runs = 2000
 
+remappings = [
+    # Safe contracts
+    "@gnosis.pm/safe-contracts/=lib/safe-contracts/",
+    # Zodiac (Modifier base, Module framework)
+    "@zodiac/=lib/zodiac/contracts/",
+    # Zodiac Roles (EVM package lives under packages/evm)
+    "@roles/=lib/zodiac-modifier-roles/packages/evm/contracts/",
+    # OpenZeppelin upgradeable contracts
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+    # OpenZeppelin regular contracts (for non-upgradeable)
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/",
+
+    "@safe-global/safe-contracts/=lib/safe-contracts/",
+    "@gnosis.pm/zodiac/=lib/zodiac/"
+]
+
 rpc_endpoints = { mainnet = "https://eth.drpc.org", sepolia = "https://rpc.ankr.com/eth_sepolia", base = "https://mainnet.base.org" }
