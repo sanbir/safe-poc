@@ -16,3 +16,4 @@ docs/
 .idea
 /broadcast/
 /forge-cache/
+/.wake/
