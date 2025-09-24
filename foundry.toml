@@ -9,9 +9,17 @@ via_ir = true
 optimizer = true
 optimizer-runs = 2000
 
+# Support for P2P library which uses 0.8.27
+[profile.p2p]
+solc-version = "0.8.27"
+evm_version = "shanghai"
+via_ir = true
+optimizer = true
+optimizer-runs = 2000
+
 remappings = [
     # Safe contracts
-    "@gnosis.pm/safe-contracts/=lib/safe-contracts/",
+    "@gnosis.pm/safe-contracts/=lib/safe-contracts/contracts/",
     # Zodiac (Modifier base, Module framework)
     "@zodiac/=lib/zodiac/contracts/",
     # Zodiac Roles (EVM package lives under packages/evm)
