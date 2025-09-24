@@ -11,6 +11,15 @@
       "rev": "e725abddf1e01cf05ace496e950fc8e243cc7cab"
     }
   },
+  "lib/p2p-lending-proxy": {
+    "tag": {
+      "name": "v1.0.0",
+      "rev": "e27cd40e4e9a0dba5d99b5c07b624b31686afa52"
+    }
+  },
+  "lib/permit2": {
+    "rev": "cc306b6"
+  },
   "lib/safe-contracts": {
     "tag": {
       "name": "v1.3.0",

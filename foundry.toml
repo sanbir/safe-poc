@@ -22,7 +22,10 @@ remappings = [
     "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/",
 
     "@safe-global/safe-contracts/=lib/safe-contracts/",
-    "@gnosis.pm/zodiac/=lib/zodiac/"
+    "@gnosis.pm/zodiac/=lib/zodiac/",
+
+    "p2p-lending-proxy/=lib/p2p-lending-proxy/",
+    "permit2/=lib/permit2/"
 ]
 
 rpc_endpoints = { mainnet = "https://eth.drpc.org", sepolia = "https://rpc.ankr.com/eth_sepolia", base = "https://mainnet.base.org" }
