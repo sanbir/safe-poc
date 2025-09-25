@@ -59,3 +59,6 @@ remappings = [
 ]
 
 rpc_endpoints = { mainnet = "https://eth.drpc.org", sepolia = "https://rpc.ankr.com/eth_sepolia", base = "https://mainnet.base.org" }
+
+# Skip problematic files that require modulekit dependencies not available in CI
+skip = ["src/P2pEigenLayerModule.sol"]
