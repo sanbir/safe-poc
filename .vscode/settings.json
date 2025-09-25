@@ -1,0 +1,13 @@
+{
+    "wake.compiler.solc.remappings": [
+        "@gnosis.pm/safe-contracts/=lib/safe-contracts/",
+        "@gnosis.pm/zodiac/=lib/zodiac/",
+        "@zodiac/=lib/zodiac/contracts/",
+        "@roles/=lib/zodiac-modifier-roles/packages/evm/contracts/",
+        "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/",
+        "@safe-global/safe-contracts/=lib/safe-contracts/",
+        "p2p-lending-proxy/=lib/p2p-lending-proxy/",
+        "permit2/=lib/permit2/"
+    ]
+}

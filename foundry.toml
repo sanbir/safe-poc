@@ -3,10 +3,37 @@ src = "src"
 out = "out"
 libs = ["lib"]
 cache_path  = "forge-cache"
-solc-version = "0.8.30"
+solc-version = "0.8.27"
 evm_version = "prague"
 via_ir = true
 optimizer = true
 optimizer-runs = 2000
+
+# Support for P2P library which uses 0.8.27
+[profile.p2p]
+solc-version = "0.8.27"
+evm_version = "shanghai"
+via_ir = true
+optimizer = true
+optimizer-runs = 2000
+
+remappings = [
+    # Safe contracts
+    "@gnosis.pm/safe-contracts/=lib/safe-contracts/contracts/",
+    # Zodiac (Modifier base, Module framework)
+    "@zodiac/=lib/zodiac/contracts/",
+    # Zodiac Roles (EVM package lives under packages/evm)
+    "@roles/=lib/zodiac-modifier-roles/packages/evm/contracts/",
+    # OpenZeppelin upgradeable contracts
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+    # OpenZeppelin regular contracts (for non-upgradeable)
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/",
+
+    "@safe-global/safe-contracts/=lib/safe-contracts/",
+    "@gnosis.pm/zodiac/=lib/zodiac/",
+
+    "p2p-lending-proxy/=lib/p2p-lending-proxy/",
+    "permit2/=lib/permit2/"
+]
 
 rpc_endpoints = { mainnet = "https://eth.drpc.org", sepolia = "https://rpc.ankr.com/eth_sepolia", base = "https://mainnet.base.org" }
