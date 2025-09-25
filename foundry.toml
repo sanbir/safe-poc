@@ -35,24 +35,14 @@ remappings = [
     "p2p-lending-proxy/=lib/p2p-lending-proxy/",
     "permit2/=lib/permit2/",
     
-    # ModuleKit dependencies
-    "@ERC4337/=lib/modulekit/node_modules/@ERC4337/",
-    "@prb/math/=lib/modulekit/node_modules/@prb/math/src/",
-    "ExcessivelySafeCall/=lib/modulekit/node_modules/excessively-safe-call/src/",
-    "account-abstraction-v0.6/=lib/modulekit/node_modules/@ERC4337/account-abstraction-v0.6/contracts/",
-    "account-abstraction/=lib/modulekit/node_modules/@ERC4337/account-abstraction/contracts/",
-    "ds-test/=lib/modulekit/node_modules/ds-test/src/",
-    "erc4337-validation/=lib/modulekit/node_modules/@rhinestone/erc4337-validation/src/",
+    # Other dependencies (modulekit remappings removed since we skip the entire modulekit directory)
     "erc4626-tests/=lib/openzeppelin-contracts-upgradeable/lib/erc4626-tests/",
     "forge-gas-snapshot/=lib/permit2/lib/forge-gas-snapshot/src/",
     "forge-std/=lib/forge-std/src/",
     "halmos-cheatcodes/=lib/openzeppelin-contracts-upgradeable/lib/halmos-cheatcodes/src/",
-    "modulekit/=lib/modulekit/src/",
     "openzeppelin-contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/",
     "openzeppelin-contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/",
     "safe-contracts/=lib/safe-contracts/contracts/",
-    "solady/=lib/modulekit/node_modules/solady/src/",
-    "solarray/=lib/modulekit/node_modules/solarray/src/",
     "solmate/=lib/permit2/lib/solmate/src/",
     "zodiac-modifier-roles/=lib/zodiac-modifier-roles/",
     "zodiac/=lib/zodiac/contracts/"

@@ -10,6 +10,7 @@ import "../lib/safe-contracts/contracts/GnosisSafe.sol";
 import "../lib/safe-contracts/contracts/base/ModuleManager.sol";
 import "../lib/safe-contracts/contracts/base/FallbackManager.sol";
 import "../lib/safe-contracts/contracts/proxies/GnosisSafeProxyFactory.sol";
+import "../lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/mocks/ERC1271WalletMock.sol" as ERC1271Mock;
 import "../lib/zodiac-modifier-roles/packages/evm/contracts/Roles.sol" as ZodiacRoles;
 import "../lib/zodiac-modifier-roles/packages/evm/contracts/Types.sol";
 import "../lib/zodiac/contracts/factory/ModuleProxyFactory.sol";
@@ -18,37 +19,6 @@ import "forge-std/Vm.sol";
 import "forge-std/console.sol";
 import "forge-std/console2.sol";
 
-// Simple ERC-1271 handler compatible with Solidity 0.8.30
-contract SimpleERC1271Handler {
-    address public immutable safe;
-    address public immutable owner;
-    
-    constructor(address _safe, address _owner) {
-        safe = _safe;
-        owner = _owner;
-    }
-    
-    function isValidSignature(bytes32 hash, bytes memory signature) external view returns (bytes4) {
-        // For a single-owner Safe, verify the signature against the owner
-        if (signature.length == 65) {
-            bytes32 r;
-            bytes32 s;
-            uint8 v;
-            assembly {
-                r := mload(add(signature, 32))
-                s := mload(add(signature, 64))
-                v := byte(0, mload(add(signature, 96)))
-            }
-            
-            address signer = ecrecover(hash, v, r, s);
-            if (signer == owner) {
-                return 0x1626ba7e; // EIP1271 magic value
-            }
-        }
-        
-        return 0xffffffff; // Invalid signature
-    }
-}
 
 contract MainnetIntegration is Test {
     using SafeERC20 for IERC20;
@@ -61,7 +31,7 @@ contract MainnetIntegration is Test {
     ZodiacRoles.Roles private roles;
     GnosisSafeProxyFactory private safeFactory;
     ModuleProxyFactory private moduleFactory;
-    SimpleERC1271Handler private fallbackHandler;
+    ERC1271Mock.ERC1271WalletMock private fallbackHandler;
     address private relayer;
     bytes32 constant ROLE_RELAYER = keccak256("RELAYER");
 
@@ -695,7 +665,7 @@ contract MainnetIntegration is Test {
         ));
 
         // Deploy ERC-1271 handler for the Safe
-        fallbackHandler = new SimpleERC1271Handler(address(userSafe), clientAddress);
+        fallbackHandler = new ERC1271Mock.ERC1271WalletMock(clientAddress);
 
         // Set the ERC-1271 handler as the fallback handler for the Safe
         _safeSetFallbackHandler(address(fallbackHandler));
