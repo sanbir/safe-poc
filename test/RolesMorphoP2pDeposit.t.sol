@@ -1,12 +1,10 @@
 // SPDX-FileCopyrightText: 2025 P2P Validator <info@p2p.org>
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.30;
+pragma solidity 0.8.27;
 
 import "../lib/p2p-lending-proxy/src/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../lib/p2p-lending-proxy/src/adapters/morpho/p2pMorphoProxyFactory/P2pMorphoProxyFactory.sol";
-import "../lib/p2p-lending-proxy/src/adapters/morpho/IMorphoBundler.sol";
-import "../lib/p2p-lending-proxy/src/adapters/morpho/P2pErrors.sol";
 import "../lib/p2p-lending-proxy/src/@permit2/libraries/Permit2Lib.sol";
 import "../lib/safe-contracts/contracts/GnosisSafe.sol";
 import "../lib/safe-contracts/contracts/base/ModuleManager.sol";
@@ -104,9 +102,9 @@ contract MainnetIntegration is Test {
 
         vm.startPrank(p2pOperatorAddress);
         factory = new P2pMorphoProxyFactory(
+            MorphoEthereumBundlerV2,
             p2pSignerAddress,
-            P2pTreasury,
-            VaultUSDT
+            P2pTreasury
         );
         vm.stopPrank();
 
@@ -114,7 +112,7 @@ contract MainnetIntegration is Test {
         _setupSafeAndRoles();
         
         // Update proxy address to use Safe address
-        proxyAddress = factory.predictP2pYieldProxyAddress(address(userSafe), ClientBasisPoints);
+        proxyAddress = factory.predictP2pLendingProxyAddress(address(userSafe), ClientBasisPoints);
 
         asset = USDC;
         vault = VaultUSDC;
@@ -308,7 +306,7 @@ contract MainnetIntegration is Test {
 
         vm.startPrank(p2pOperatorAddress);
         factory.setCalldataRules(
-            P2pStructs.RuleType.Deposit,
+            P2pStructs.FunctionType.Deposit,
             MorphoEthereumBundlerV2,
             multicallSelector,
             rulesDeposit
@@ -326,7 +324,7 @@ contract MainnetIntegration is Test {
 
         vm.startPrank(p2pOperatorAddress);
         factory.setCalldataRules(
-            P2pStructs.RuleType.Withdrawal,
+            P2pStructs.FunctionType.Withdrawal,
             MorphoEthereumBundlerV2,
             multicallSelector,
             rulesWithdrawal

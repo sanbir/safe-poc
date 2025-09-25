@@ -1,0 +1,16 @@
+{
+  "transactions": [
+    {
+      "rpc": "https://mainnet.optimism.io"
+    },
+    {
+      "rpc": "https://mainnet.optimism.io"
+    },
+    {
+      "rpc": "https://mainnet.optimism.io"
+    },
+    {
+      "rpc": "https://mainnet.optimism.io"
+    }
+  ]
+}

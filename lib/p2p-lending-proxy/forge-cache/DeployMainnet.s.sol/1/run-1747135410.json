@@ -1,0 +1,16 @@
+{
+  "transactions": [
+    {
+      "rpc": "https://eth.drpc.org"
+    },
+    {
+      "rpc": "https://eth.drpc.org"
+    },
+    {
+      "rpc": "https://eth.drpc.org"
+    },
+    {
+      "rpc": "https://eth.drpc.org"
+    }
+  ]
+}
